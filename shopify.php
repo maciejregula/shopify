@@ -116,18 +116,22 @@
 		}
 
 
-	class Exception extends http\Exception { }
-	class CurlException extends Exception { }
-	class ApiException extends Exception
-	{
-		function __construct($message, $code, $request, $response=array(), Exception $previous=null)
-		{
-			$response_body_json = isset($response['body']) ? $response['body'] : '';
-			$response = json_decode($response_body_json, true);
-			$response_error = isset($response['errors']) ? ' '.var_export($response['errors'], true) : '';
-			$this->message = $message.$response_error;
-			parent::__construct($this->message, $code, $request, $response, $previous);
-		}
-	}
+    class Exception extends http\Exception { }
+    class CurlException extends Exception { }
+    class ApiException extends Exception
+    {
+        function __construct($message, $code, $request, $response=array(), Exception $previous=null)
+        {
+            $response_body_json = isset($response['body']) ? $response['body'] : '';
+            if (is_array($response_body_json) && isset($response_body_json['errors'])) {
+                parent::__construct(var_export($response_body_json['errors'], true), 200, $request);
+            } else {
+                $response = json_decode($response_body_json, true);
+                $response_error = isset($response['errors']) ? ' '.var_export($response['errors'], true) : '';
+                $this->message = $message.$response_error;
+                parent::__construct($this->message, $code, $request, $response, $previous);
+            }
+        }
+    }
 
 ?>
