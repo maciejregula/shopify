@@ -131,7 +131,7 @@
     class CurlException extends Exception { }
     class ApiException extends Exception
     {
-        function __construct($message, $code, $request, $response=array(), Exception $previous=null)
+        function __construct($message, $code, $request, $response=array(), ?Exception $previous=null)
         {
             $response_body_json = isset($response['body']) ? $response['body'] : '';
             if (is_array($response_body_json) && isset($response_body_json['errors'])) {
